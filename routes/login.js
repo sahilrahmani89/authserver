@@ -22,6 +22,7 @@ router.post('/login',async(req,res)=>{
                 process.env.JWT_SECRET,
                 {expiresIn:'1d'}
             )
+            res.cookie('accessToken', accessToken, { httpOnly: true });
           return  res.status(201).json({...responseMsg,statusCode:201,message:'User Logged In',data:{...info,accessToken}})
         }else{
             return res.status(401).json({...responseMsg,statusCode:401,message:'Password Does not match'})
@@ -51,9 +52,13 @@ router.post('/signup',async(req,res)=>{
         const {password,...result} = response.toObject()
         res.status(201).json({...responseMsg,statusCode:201,message:'New User Created',data:result})
     }catch(err){
-        console.log('this one triggered signup')
         return res.status(500).json({...responseMsg,statusCode:500,message:err.message})
     }
+})
+
+router.post('/logout',async(req,res)=>{
+    res.clearCookie('accessToken');
+    res.send('Logged out');
 })
 
 export default router
